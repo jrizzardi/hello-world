@@ -29,7 +29,9 @@ Lista de items (usar asteriscos y sangrías)
   * Leche
   * Queso
   
-Las listas ordenadas se escriben numerando cada línea.
+Las listas ordenadas se escriben numerando cada línea.  
+
+Para generar listas anidadas dentro de otras, simplemente hay que añadir cuatro espacios en blanco antes del siguiente asterisco.
 
 Lista de pendientes
 ------------------
@@ -40,6 +42,7 @@ Lista de pendientes
 Representamos los fragmentos de código encerrados entre dos signos de acento grave. Por ejemplo: `<br/>`.
 
 > Los bloques de citas se redactan con el signo mayor al comienzo. Le deja una sangría con respecto al margen izquierdo.
+>> Se pueden anidar citas utilzando más de un signo mayor.
 
 El título del enlace se encierra primero entre corchetes y después se incluye la dirección completa del URL entre paréntesis. O sea si querés ir a Google, tenés que presionar [acá](http:\\google.com).
 
@@ -58,3 +61,5 @@ Para especificar la alineación del contenido de cada columna se pueden agregar 
 | :-------- | :-------: | --------: |
 | Manzanas | rojo | 5000 |
 | Plátanos | amarillo | 75 |
+
+### La barra invertida es el caracter de escape.
