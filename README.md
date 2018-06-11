@@ -43,5 +43,18 @@ Representamos los fragmentos de código encerrados entre dos signos de acento gr
 
 El título del enlace se encierra primero entre corchetes y después se incluye la dirección completa del URL entre paréntesis. O sea si querés ir a Google, tenés que presionar [acá](http:\\google.com).
 
+# Tablas
+
+| Encabezado 1 | Encabezado 2 | Encabezado 3 |
+| --------- | --------- | --------- |
+| renglón 1, columna 1 | renglón 1, columna 2 | renglón 1, columna 3|
+| renglón 2, columna 1 | renglón 2, columna 2 | renglón 2, columna 3|
+| renglón 3, columna 1 | renglón 3, columna 2 | renglón 3, columna 3|
 
 
+Para especificar la alineación del contenido de cada columna se pueden agregar dos puntos al renglón de los encabezados como sigue:
+
+| Alineado-izquierda | Centrado | Alineado-derecha |
+| :-------- | :-------: | --------: |
+| Manzanas | rojo | 5000 |
+| Plátanos | amarillo | 75 |
