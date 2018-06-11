@@ -41,5 +41,7 @@ Representamos los fragmentos de código encerrados entre dos signos de acento gr
 
 > Los bloques de citas se redactan con el signo mayor al comienzo. Le deja una sangría con respecto al margen izquierdo.
 
-El título del enlace se encierra primero entre corchetes y después se incluye la dirección completa del URL entre paréntesis. O sea si querés ir a Google, tenés que presionar [acá] (http:\\google.com)
+El título del enlace se encierra primero entre corchetes y después se incluye la dirección completa del URL entre paréntesis. O sea si querés ir a Google, tenés que presionar [acá](http:\\google.com).
+
+
 
