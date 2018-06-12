@@ -105,14 +105,24 @@ SELECT lat, lon
 | 2 | 225V | 
 | 3 | 380V | 
 
-> Nota 6: se informan hasta tres precintos. Para obtener la información de cada uno de ellos acceder a la tabla de precintos de la siguiente forma:
+> Nota 6: En MAC, el precinto que se informa es el precinto_tapa. Para obtener la información del mismo, tomar el último instalado
 
 ~~~
+SELECT serie, 
+       numero_precinto, 
+       fecha_estado
+  FROM prt_precintos
+ WHERE numero_cliente = <servicio_cab.numero_cliente>
+   AND estado_actual ='08'
+ ORDER BY fecha_estado DESC
+ 
 SELECT color,
-       ubicacion
+       ubicacion,
+       numero_precinto,
+       serie
   FROM pr_precintos
- WHERE serie = <servicio_corte.pr_serieX_c> 
-  AND numero_precinto = <servicio_corte.pr_numeroX_c>  
+ WHERE serie = <prt_precintos.serie> 
+  AND numero_precinto = <prt_precintos.numero_precinto>  
 ~~~
 
 
@@ -143,12 +153,12 @@ SELECT color,
 | TIPO_MEDIDOR | medid.clave_montri (ver Nota 4) |
 | UBICACION_DEL_MEDIDOR | servicio_corte.info_adic_lectura |
 | VALOR_TENSION_NOMINAL | Valor según tecni.codigo_voltaje (Ver Nota 5) |
-| **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | (Ver Nota 6) |
+| **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** |  |
 | COLOR_DEL_SELLO | pr_precintos.color (Ver Nota 6) |
-| SELLOS_EN_SISTEMA | servicio_corte.pr_numeroX_c (Ver Nota 6) |
+| SELLOS_EN_SISTEMA | pr_precintos.numero_precinto (Ver Nota 6) |
 | TIPO_DE_SELLO | **???????** |
 | UBICACION_DEL_SELLO | pr_precintos.ubicacion (Ver Nota 6) |
-| SERIE_SELLO | servicio_corte.pr_serieX_c (Ver Nota 6) |
+| SERIE_SELLO | pr_precintos.serie (Ver Nota 6) |
 | **SUMINSTROS: Request.DATOS_COMUNES_PROCESOS_TDC.SUMINISTROS** | |
 | ANTIGUEDAD | servicio_corte.antiguedad_saldo |
 | CODIGO_CLIENTE | servicio_cab.numero_cliente | 
