@@ -172,3 +172,8 @@ SELECT color,
 3. Con la estructura cargada, consumir el WS de TIBCO P001C_PeticionCreacionTDC_ARG.wsdl. 
 
 4. Evaluar el resultado que retorna el WS: 
+
+* Si el Código de Error/Resultado es "00" ("Operación ejecutada con éxito"): actualizar el campo servicio_cab.estado a "W".
+* Si el Código es "ODL002" ("Clave de identificación del TdC ya presiente en eOrder") o "ODL016" ("Intento de insertar a la misma vez el mismo TDC 2 veces"): la orden ya existe en eOrder. Registrar el evento pero no actualizar tablas en MAC.
+* En otro caso: error no manejable. Registrar el evento (enviar mail) pero no actualizar tablas en MAC.
+
