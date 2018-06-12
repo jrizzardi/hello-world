@@ -169,3 +169,6 @@ SELECT color,
 | TEXTO_DIRECCION | servicio_corte.nom_calle + " " + servicio_corte.nro_dir + " (entre " + servicio_corte.nom_entre + " y " + servicio_corte.nom_entre1 + ")"|
 
 
+3. Con la estructura cargada, consumir el WS de TIBCO P001C_PeticionCreacionTDC_ARG.wsdl. 
+
+4. Evaluar el resultado que retorna el WS: 
