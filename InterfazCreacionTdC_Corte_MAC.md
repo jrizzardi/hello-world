@@ -12,9 +12,9 @@ SELECT nro_servicio,
        numero_cliente,
        sector,
        zona
-   FROM servicio_cab 
-  WHERE id_servicio = 1 
-    AND estado = 'T' 
+  FROM servicio_cab 
+ WHERE id_servicio = 1 
+   AND estado = 'T' 
  ORDER BY fecha_solicitud
 ~~~
 
@@ -30,14 +30,17 @@ SELECT nro_servicio,
 SELECT marca_medidor,
        modelo_medidor,
        numero_medidor,
-       info_adic_lectura
-   FROM servicio_corte 
-  WHERE nro_servicio = <servicio_cab.nro_servicio>
+       info_adic_lectura,
+       pr_serie1_c, pr_numero1_c,
+       pr_serie2_c, pr_numero2_c,
+       pr_serie3_c, pr_numero3_c
+  FROM servicio_corte 
+ WHERE nro_servicio = <servicio_cab.nro_servicio>
   
 SELECT codigo_voltaje,
        tec_tipo_instala
   FROM tecni 
-  WHERE numero_cliente = <servicio_cab.numero_cliente>
+ WHERE numero_cliente = <servicio_cab.numero_cliente>
   
 SELECT clace_montri
   FROM medid
@@ -77,6 +80,16 @@ SELECT clace_montri
 | 2 | 225V | 
 | 3 | 380V | 
 
+> Nota 6: se informan hasta tres precintos. Para obtener la información de cada uno de ellos acceder a la tabla de precintos de la siguiente forma:
+
+~~~
+SELECT color,
+       ubicacion
+  FROM pr_precintos
+ WHERE serie = <servicio_corte.pr_serieX_c> 
+  AND numero_precinto = <servicio_corte.pr_numeroX_c>  
+~~~
+
 
 | Elemento | Valor |
 | --------- | --------- | 
@@ -105,12 +118,12 @@ SELECT clace_montri
 | TIPO_MEDIDOR | medid.clave_montri (ver Nota 4) |
 | UBICACION_DEL_MEDIDOR | servicio_corte.info_adic_lectura |
 | VALOR_TENSION_NOMINAL | Valor según tecni.codigo_voltaje (Ver Nota 5) |
-| **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | |
-| COLOR_DEL_SELLO | |
-| SELLOS_EN_SISTEMA | |
+| **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | (Ver Nota 6) |
+| COLOR_DEL_SELLO | pr_precintos.color (Ver Nota 6) |
+| SELLOS_EN_SISTEMA | servicio_corte.pr_numeroX_c (Ver Nota 6) |
 | TIPO_DE_SELLO | |
-| UBICACION_DEL_SELLO | |
-| SERIE_SELLO | |
+| UBICACION_DEL_SELLO | pr_precintos.ubicacion (Ver Nota 6) |
+| SERIE_SELLO | servicio_corte.pr_serieX_c (Ver Nota 6) |
 | **SUMINSTROS: Request.DATOS_COMUNES_PROCESOS_TDC.SUMINISTROS** | |
 | ANTIGUEDAD  |
 | CODIGO_CLIENTE | | 
