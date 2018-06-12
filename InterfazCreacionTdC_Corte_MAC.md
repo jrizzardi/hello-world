@@ -58,7 +58,7 @@ SELECT clace_montri
     * Si es INDIRECTO: PROPIA
        
 * Si servicio_cab.tarifa = T3:
-    * Si es INDIRECTO: PROPIA
+    * PROPIA
 
 
 > Nota 4: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de medid.clave_montri:  
