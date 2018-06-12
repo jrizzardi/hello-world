@@ -11,7 +11,9 @@ SELECT nro_servicio,
        fecha_solicitud,
        numero_cliente,
        sector,
-       zona
+       zona,
+       sucursal,
+       tarifa
   FROM servicio_cab 
  WHERE id_servicio = 1 
    AND estado = 'T' 
@@ -35,7 +37,15 @@ SELECT marca_medidor,
        pr_serie2_c, pr_numero2_c,
        pr_serie3_c, pr_numero3_c,
        antiguedad_saldo,
-       deuda
+       deuda,
+       piso_dir, 
+       depto_dir,
+       correlativo_ruta,
+       telefono,
+       nom_calle,
+       nro_dir,
+       nom_entre,
+       nom_entre1
   FROM servicio_corte 
  WHERE nro_servicio = <servicio_cab.nro_servicio>
   
@@ -44,16 +54,25 @@ SELECT codigo_voltaje,
   FROM tecni 
  WHERE numero_cliente = <servicio_cab.numero_cliente>
   
-SELECT clace_montri
+SELECT clave_montri
   FROM medid
  WHERE marca_medidor = <servicio_corte.marca_medidor> 
    AND modelo_medidor = <servicio_corte.modelo_medidor> 
    AND numero_medidor = <servicio_corte.numero_medidor>
    AND numero_cliente = <servicio_cab.numero_cliente>
    
-SELECT cod_postal
+SELECT cod_postal,
+       provincia, 
+       nom_comuna, 
+       nom_barrio,
+       nom_provincia
   FROM cliente 
  WHERE numero_cliente = <servicio_cab.numero_cliente>
+ 
+SELECT lat, lon
+  FROM ubica_geo_cliente 
+ WHERE numero_cliente = <servicio_cab.numero_cliente>
+ 
 ~~~
 
 
@@ -127,7 +146,7 @@ SELECT color,
 | **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | (Ver Nota 6) |
 | COLOR_DEL_SELLO | pr_precintos.color (Ver Nota 6) |
 | SELLOS_EN_SISTEMA | servicio_corte.pr_numeroX_c (Ver Nota 6) |
-| TIPO_DE_SELLO | ??????? |
+| TIPO_DE_SELLO | **???????** |
 | UBICACION_DEL_SELLO | pr_precintos.ubicacion (Ver Nota 6) |
 | SERIE_SELLO | servicio_corte.pr_serieX_c (Ver Nota 6) |
 | **SUMINSTROS: Request.DATOS_COMUNES_PROCESOS_TDC.SUMINISTROS** | |
@@ -135,18 +154,18 @@ SELECT color,
 | CODIGO_CLIENTE | servicio_cab.numero_cliente | 
 | CODIGO_POSTAL | cliente.cod_postal |
 | DEUDA | servicio_corte.deuda |
-| GIRO_DE_NEGOCIO | |
-| LATITUD_CLIENTE | |
-| LOCALIDAD | |
-| LOCALIZACION_TERRENO | |
-| LONGITUD_CLIENTE | |
-| NOMBRE_Y_APELLIDO_CLIENTE | |
-| PISO | |
-| PROVINCIA | |
-| RUTA_DE_LECTURA | |
-| SUCURSAL | |
-| TARIFA_EXISTENTE | |
-| TELEFONO_CONTACTO | |
-| TEXTO_DIRECCION | |
+| GIRO_DE_NEGOCIO | **???????** |
+| LATITUD_CLIENTE | ubica_geo_cliente.lat  |
+| LONGITUD_CLIENTE | ubica_geo_cliente.lat |
+| LOCALIDAD | cliente.nom_comuna si cliente.provincia = "B"; cliente.nom_barrio si cliente.provincia = "C" |
+| LOCALIZACION_TERRENO | servicio_corte.obs_dir |
+| NOMBRE_Y_APELLIDO_CLIENTE | servicio_corte.nombre |
+| PISO | servicio_corte.piso_dir + " " + servicio_corte.piso_depto |
+| PROVINCIA | cliente.nom_provincia |
+| RUTA_DE_LECTURA | servicio_corte.correlativo_ruta |
+| SUCURSAL | servicio_cab.sucursal |
+| TARIFA_EXISTENTE | servicio_cab.tarifa |
+| TELEFONO_CONTACTO | servicio_corte.telefono |
+| TEXTO_DIRECCION | servicio_corte.nom_calle + " " + servicio_corte.nro_dir + " (entre " + servicio_corte.nom_entre + " y " + servicio_corte.nom_entre1 + ")"|
 
 
