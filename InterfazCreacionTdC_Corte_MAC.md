@@ -8,7 +8,8 @@
 
 ~~~
 SELECT nro_servicio,
-       fecha_solicitud
+       fecha_solicitud,
+       numero_cliente
    FROM servicio_cab 
   WHERE id_servicio = 1 
     AND estado = 'T' 
@@ -29,7 +30,11 @@ SELECT marca_medidor,
        numero_medidor,
        info_adic_lectura
    FROM servicio_corte 
-  WHERE nro_servicio = <Nro. Servicio>
+  WHERE nro_servicio = <servicio_cab.nro_servicio>
+  
+SELECT codigo_voltaje
+   FROM tecni 
+  WHERE numero_cliente = <servicio_cab.numero_cliente>
 ~~~
 
 | Elemento | Valor |
