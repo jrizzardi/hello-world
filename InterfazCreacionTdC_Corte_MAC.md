@@ -9,7 +9,9 @@
 ~~~
 SELECT nro_servicio,
        fecha_solicitud,
-       numero_cliente
+       numero_cliente,
+       sector,
+       zona
    FROM servicio_cab 
   WHERE id_servicio = 1 
     AND estado = 'T' 
@@ -49,13 +51,13 @@ SELECT codigo_voltaje
 | LLAVE_SECRETA | -*Definir*- |
 | **Request.DATOS_COMUNES_PROCESOS_TDC** | |
 | FECHA_Y_HORA_DE_CREACION_DE_LA_ORDEN | servicio_cab.fecha_solicitud |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_CONTRACTISTA | |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_INTERNO | |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_LEGAL | |
-| SECTOR | |
-| ZONA | |
-| TIPO_DE_RED | |
-| PARAMETRO_NIVEL_OPERATIVO_3 | |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_CONTRACTISTA | servicio_cab.fecha_solicitud |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_INTERNO | servicio_cab.fecha_solicitud |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_LEGAL | servicio_cab.fecha_solicitud |
+| SECTOR | servicio_cab.sector |
+| ZONA | servicio_cab.zona |
+| TIPO_DE_RED | tecni.tec_tipo_instala |
+| PARAMETRO_NIVEL_OPERATIVO_3 | TIPO_CUADRILLA |
 | VALOR_NIVEL_OPERATIVO_3 | |
 | **MEDIDORS: Request.DATOS_COMUNES_PROCESOS_TDC.MEDIDORS** | |
 | MARCA_MEDIDOR | servicio_corte.marca_medidor |
@@ -63,7 +65,7 @@ SELECT codigo_voltaje
 | NUMERO_MEDIDOR | servicio_corte.numero_medidor |
 | TIPO_MEDIDOR | |
 | UBICACION_DEL_MEDIDOR | servicio_corte.info_adic_lectura |
-| VALOR_TENSION_NOMINAL | |
+| VALOR_TENSION_NOMINAL | tecni_codigo_voltaje |
 | **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | |
 | COLOR_DEL_SELLO | |
 | SELLOS_EN_SISTEMA | |
