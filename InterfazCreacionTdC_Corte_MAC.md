@@ -38,28 +38,44 @@ SELECT codigo_voltaje,
        tec_tipo_instala
   FROM tecni 
   WHERE numero_cliente = <servicio_cab.numero_cliente>
+  
+SELECT clace_montri
+  FROM medid
+ WHERE marca_medidor = <servicio_corte.marca_medidor> 
+   AND modelo_medidor = <servicio_corte.modelo_medidor> 
+   AND numero_medidor = <servicio_corte.numero_medidor>
+   AND numero_cliente = <servicio_cab.numero_cliente>
 ~~~
 
-> Nota 3: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de tecni.codigo_voltaje:  
+
+> Nota 3: Para completar el valor de **VALOR_NIVEL_OPERATIVO_3** se debe respetar la siguiente lógica (en general):  
+
+* Si servicio_cab.tarifa = T1:
+    * Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
+
+* Si servicio_cab.tarifa = T2:
+    * Si es DIRECTO: Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
+    * Si es INDIRECTO: PROPIA
+       
+* Si servicio_cab.tarifa = T3:
+    * Si es INDIRECTO: PROPIA
+
+
+> Nota 4: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de medid.clave_montri:  
+
+| Valor de clave_montri | Enviar |
+|-----|------|
+| M | MONOFASICO | 
+| T | TRIFASICO | 
+
+
+> Nota 5: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de tecni.codigo_voltaje:  
 
 | Valor de codigo_voltaje | Enviar |
 |-----|------|
 | 1 | 220V | 
 | 2 | 225V | 
 | 3 | 380V | 
-
-
-> Nota 4: Para completar el valor de **VALOR_NIVEL_OPERATIVO_3** se debe respetar la siguiente lógica (en general):  
-
->> Si servicio_cab.tarifa = T1:
-       >>> Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
-
->> Si servicio_cab.tarifa = T2:
-       >>> Si es DIRECTO: Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
-       >>> Si es INDIRECTO: PROPIA
-       
->> Si servicio_cab.tarifa = T3:
-       >>> Si es INDIRECTO: PROPIA
 
 
 | Elemento | Valor |
@@ -81,14 +97,14 @@ SELECT codigo_voltaje,
 | ZONA | servicio_cab.zona |
 | TIPO_DE_RED | tecni.tec_tipo_instala |
 | PARAMETRO_NIVEL_OPERATIVO_3 | TIPO_CUADRILLA |
-| VALOR_NIVEL_OPERATIVO_3 | |
+| VALOR_NIVEL_OPERATIVO_3 | PROPIA o CONTRATADA (ver Nota 3) |
 | **MEDIDORS: Request.DATOS_COMUNES_PROCESOS_TDC.MEDIDORS** | |
 | MARCA_MEDIDOR | servicio_corte.marca_medidor |
 | MODELO_MEDIDOR | servicio_corte.modelo_medidor |
 | NUMERO_MEDIDOR | servicio_corte.numero_medidor |
-| TIPO_MEDIDOR | |
+| TIPO_MEDIDOR | medid.clave_montri (ver Nota 4) |
 | UBICACION_DEL_MEDIDOR | servicio_corte.info_adic_lectura |
-| VALOR_TENSION_NOMINAL | Valor según tecni.codigo_voltaje (Ver Nota 3) |
+| VALOR_TENSION_NOMINAL | Valor según tecni.codigo_voltaje (Ver Nota 5) |
 | **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | |
 | COLOR_DEL_SELLO | |
 | SELLOS_EN_SISTEMA | |
