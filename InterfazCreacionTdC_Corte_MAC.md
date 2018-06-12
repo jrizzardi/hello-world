@@ -33,7 +33,9 @@ SELECT marca_medidor,
        info_adic_lectura,
        pr_serie1_c, pr_numero1_c,
        pr_serie2_c, pr_numero2_c,
-       pr_serie3_c, pr_numero3_c
+       pr_serie3_c, pr_numero3_c,
+       antiguedad_saldo,
+       deuda
   FROM servicio_corte 
  WHERE nro_servicio = <servicio_cab.nro_servicio>
   
@@ -48,6 +50,10 @@ SELECT clace_montri
    AND modelo_medidor = <servicio_corte.modelo_medidor> 
    AND numero_medidor = <servicio_corte.numero_medidor>
    AND numero_cliente = <servicio_cab.numero_cliente>
+   
+SELECT cod_postal
+  FROM cliente 
+ WHERE numero_cliente = <servicio_cab.numero_cliente>
 ~~~
 
 
@@ -121,14 +127,14 @@ SELECT color,
 | **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | (Ver Nota 6) |
 | COLOR_DEL_SELLO | pr_precintos.color (Ver Nota 6) |
 | SELLOS_EN_SISTEMA | servicio_corte.pr_numeroX_c (Ver Nota 6) |
-| TIPO_DE_SELLO | |
+| TIPO_DE_SELLO | ??????? |
 | UBICACION_DEL_SELLO | pr_precintos.ubicacion (Ver Nota 6) |
 | SERIE_SELLO | servicio_corte.pr_serieX_c (Ver Nota 6) |
 | **SUMINSTROS: Request.DATOS_COMUNES_PROCESOS_TDC.SUMINISTROS** | |
-| ANTIGUEDAD  |
-| CODIGO_CLIENTE | | 
-| CODIGO_POSTAL | |
-| DEUDA | |
+| ANTIGUEDAD | servicio_corte.antiguedad_saldo |
+| CODIGO_CLIENTE | servicio_cab.numero_cliente | 
+| CODIGO_POSTAL | cliente.cod_postal |
+| DEUDA | servicio_corte.deuda |
 | GIRO_DE_NEGOCIO | |
 | LATITUD_CLIENTE | |
 | LOCALIDAD | |
