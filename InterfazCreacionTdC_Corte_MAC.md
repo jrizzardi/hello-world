@@ -34,10 +34,33 @@ SELECT marca_medidor,
    FROM servicio_corte 
   WHERE nro_servicio = <servicio_cab.nro_servicio>
   
-SELECT codigo_voltaje
-   FROM tecni 
+SELECT codigo_voltaje,
+       tec_tipo_instala
+  FROM tecni 
   WHERE numero_cliente = <servicio_cab.numero_cliente>
 ~~~
+
+> Nota 3: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de tecni.codigo_voltaje:  
+
+| Valor de codigo_voltaje | Enviar |
+|-----|------|
+| 1 | 220V | 
+| 2 | 225V | 
+| 3 | 380V | 
+
+
+> Nota 4: Para completar el valor de **VALOR_NIVEL_OPERATIVO_3** se debe respetar la siguiente lógica (en general):  
+
+>> Si servicio_cab.tarifa = T1:
+       >>> Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
+
+>> Si servicio_cab.tarifa = T2:
+       >>> Si es DIRECTO: Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
+       >>> Si es INDIRECTO: PROPIA
+       
+>> Si servicio_cab.tarifa = T3:
+       >>> Si es INDIRECTO: PROPIA
+
 
 | Elemento | Valor |
 | --------- | --------- | 
@@ -65,7 +88,7 @@ SELECT codigo_voltaje
 | NUMERO_MEDIDOR | servicio_corte.numero_medidor |
 | TIPO_MEDIDOR | |
 | UBICACION_DEL_MEDIDOR | servicio_corte.info_adic_lectura |
-| VALOR_TENSION_NOMINAL | tecni_codigo_voltaje |
+| VALOR_TENSION_NOMINAL | Valor según tecni.codigo_voltaje (Ver Nota 3) |
 | **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | |
 | COLOR_DEL_SELLO | |
 | SELLOS_EN_SISTEMA | |
