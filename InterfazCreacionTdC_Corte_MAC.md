@@ -1,32 +1,32 @@
-## Creación de TdC en eOrder - Tipo Corte - Origen MAC
+## Creación de TdC en eOrder - Tipo Corte - Origen CANDELA
 ### Detalles del Proceso
 
 
-1. Buscar en MAC todas las ordenes de CORTE que aun no fueron exportadas a eOrder
+1. Buscar en CANDELA todas las ordenes de CORTE (Suspensión) que aún no fueron exportadas a eOrder
 
-> Nota: tener en cuenta al momento de la puesta en marcha, que se deben procesar en MAC todas las ordenes pendientes en SOLDIME antes de comenzar a trabajar con eOrder.
+> Nota: tener en cuenta al momento de la puesta en marcha, no deben quedar en CANDELA ordenes sin finalizar.
 
 ~~~
-SELECT nro_servicio,
-       fecha_solicitud,
-       numero_cliente,
-       sector,
-       zona,
-       sucursal,
-       tarifa
-  FROM servicio_cab 
- WHERE id_servicio = 1 
+SELECT codigo_cuenta,
+       correlativo
+  FROM surep 
+ WHERE tipo_evento = 'S' 
    AND estado = 'T' 
  ORDER BY fecha_solicitud
 ~~~
 
 2. Por cada orden encontrada en la consulta anterior, armar una TdC con los siguientes datos:
 
-> Nota: el resto de los campos que no aparecen en la tabla deben completarse con un valor nulo (o no completarse, de acuerdo a lo que permita el WS de eORder).
+> Nota: el resto de los campos que no aparecen en la tabla deben completarse con un valor nulo (o no completarse, de acuerdo a lo que permita el WS de eOrder).
 
-> Nota 1: Formato del código externo de Orden: M########### (para MAC: son 14 caracteres en total, comienzan con el caracterer M y luego el número de servicio completado con hasta 13 ceros a izquierda). 
+> Nota 1: Formato del código externo de Orden: C###########  
+
+Para CANDELA: son 14 caracteres en total: 
+* Caracter C +
+* surep.codigo_cuenta completado con hasta 10 ceros a izquierda +
+* surep.correlativo completado con hasta 3 ceros a izquierda +
   
-> Nota 2: Para completar datos de la orden se deben consultar tablas adicionales a servicio_cab.
+> Nota 2: Para completar datos de la orden se deben consultar tablas adicionales a surep.
 
 ~~~
 SELECT marca_medidor,
@@ -54,50 +54,14 @@ SELECT codigo_voltaje,
   FROM tecni 
  WHERE numero_cliente = <servicio_cab.numero_cliente>
   
-SELECT clave_montri
-  FROM medid
- WHERE marca_medidor = <servicio_corte.marca_medidor> 
-   AND modelo_medidor = <servicio_corte.modelo_medidor> 
-   AND numero_medidor = <servicio_corte.numero_medidor>
-   AND numero_cliente = <servicio_cab.numero_cliente>
-   
-SELECT cod_postal,
-       provincia, 
-       nom_comuna, 
-       nom_barrio,
-       nom_provincia
-  FROM cliente 
- WHERE numero_cliente = <servicio_cab.numero_cliente>
- 
-SELECT lat, lon
-  FROM ubica_geo_cliente 
- WHERE numero_cliente = <servicio_cab.numero_cliente>
- 
+
 ~~~
 
 
-> Nota 3: Para completar el valor de **VALOR_NIVEL_OPERATIVO_3** se debe respetar la siguiente lógica (en general):  
-
-* Si servicio_cab.tarifa = T1:
-    * Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
-
-* Si servicio_cab.tarifa = T2:
-    * Si es DIRECTO: Ver el tipo de cuadrilla asignada a la Orden: CONTRATADA o PROPIA
-    * Si es INDIRECTO: PROPIA
-       
-* Si servicio_cab.tarifa = T3:
-    * PROPIA
+> Nota 3: Para completar el valor de **VALOR_NIVEL_OPERATIVO_3** se debe respetar la siguiente lógica enunciada en el documento InterfazCreacionTdC_Corte_MAC.md  
 
 
-> Nota 4: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de medid.clave_montri:  
-
-| Valor de clave_montri | Enviar |
-|-----|------|
-| M | MONOFASICO | 
-| T | TRIFASICO | 
-
-
-> Nota 5: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de tecni.codigo_voltaje:  
+> Nota 4: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de tecni.codigo_voltaje:  
 
 | Valor de codigo_voltaje | Enviar |
 |-----|------|
@@ -105,25 +69,6 @@ SELECT lat, lon
 | 2 | 225V | 
 | 3 | 380V | 
 
-> Nota 6: En MAC, el precinto que se informa es el precinto_tapa. Para obtener la información del mismo, tomar el último instalado
-
-~~~
-SELECT serie, 
-       numero_precinto, 
-       fecha_estado
-  FROM prt_precintos
- WHERE numero_cliente = <servicio_cab.numero_cliente>
-   AND estado_actual ='08'
- ORDER BY fecha_estado DESC
- 
-SELECT color,
-       ubicacion,
-       numero_precinto,
-       serie
-  FROM pr_precintos
- WHERE serie = <prt_precintos.serie> 
-  AND numero_precinto = <prt_precintos.numero_precinto>  
-~~~
 
 
 | Elemento | Valor |
@@ -132,7 +77,7 @@ SELECT color,
 | CODIGO_DISTRIBUIDORA | ESU |
 | CODIGO_EXTERNO_DEL_TDC | servicio_cab.nro_servicio con formato (ver Nota 1) |
 | CODIGO_PROCESO | GI |
-| CODIGO_SISTEMA_EXTERNO_DE_ORIGEN | ESUMAC |
+| CODIGO_SISTEMA_EXTERNO_DE_ORIGEN | ESUCAN |
 | CODIGO_SUBPROCESO | SCR |
 | CODIGO_TIPO_DE_TDC | SCR.01 |
 | LLAVE_SECRETA | -*Definir*- |
@@ -164,7 +109,7 @@ SELECT color,
 | CODIGO_CLIENTE | servicio_cab.numero_cliente | 
 | CODIGO_POSTAL | cliente.cod_postal |
 | DEUDA | servicio_corte.deuda |
-| GIRO_DE_NEGOCIO | **???????** |
+| GIRO_DE_NEGOCIO | tabla.descripcion para nomtabla = "ACTECO" y codigo = <cliente.actividad_economic> |
 | LATITUD_CLIENTE | ubica_geo_cliente.lat  |
 | LONGITUD_CLIENTE | ubica_geo_cliente.lat |
 | LOCALIDAD | cliente.nom_comuna si cliente.provincia = "B"; cliente.nom_barrio si cliente.provincia = "C" |
@@ -184,6 +129,6 @@ SELECT color,
 4. Evaluar el resultado que retorna el WS: 
 
 * Si el Código de Error/Resultado es "00" ("Operación ejecutada con éxito"): actualizar el campo servicio_cab.estado a "W".
-* Si el Código es "ODL002" ("Clave de identificación del TdC ya presiente en eOrder") o "ODL016" ("Intento de insertar a la misma vez el mismo TDC 2 veces"): la orden ya existe en eOrder. Registrar el evento pero no actualizar tablas en MAC.
+* Si el Código es "ODL002" ("Clave de identificación del TdC ya presiente en eOrder") o "ODL016" ("Intento de insertar a la misma vez el mismo TDC 2 veces"): la orden ya existe en eOrder. Registrar el evento y actualizar el campo servicio_cab.estado a "W".
 * En otro caso: error no manejable. Registrar el evento (enviar mail) pero no actualizar tablas en MAC.
 
