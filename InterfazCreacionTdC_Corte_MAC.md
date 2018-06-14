@@ -8,10 +8,12 @@
 
 ~~~
 SELECT codigo_cuenta,
-       correlativo
+       correlativo,
+       fec_solicit,
+       saldo_actual
   FROM surep 
  WHERE tipo_evento = 'S' 
-   AND estado = 'T' 
+   AND estado = '...' 
  ORDER BY fecha_solicitud
 ~~~
 
@@ -29,45 +31,48 @@ Para CANDELA: son 14 caracteres en total:
 > Nota 2: Para completar datos de la orden se deben consultar tablas adicionales a surep.
 
 ~~~
-SELECT marca_medidor,
-       modelo_medidor,
-       numero_medidor,
-       info_adic_lectura,
-       pr_serie1_c, pr_numero1_c,
-       pr_serie2_c, pr_numero2_c,
-       pr_serie3_c, pr_numero3_c,
+SELECT ciclo,
+       ruta_lectura,
+       inf_adicional,
+       sello1, sello2, sello3, sello4,
        antiguedad_saldo,
-       deuda,
-       piso_dir, 
-       depto_dir,
-       correlativo_ruta,
-       telefono,
-       nom_calle,
-       nro_dir,
-       nom_entre,
-       nom_entre1
-  FROM servicio_corte 
- WHERE nro_servicio = <servicio_cab.nro_servicio>
-  
-SELECT codigo_voltaje,
-       tec_tipo_instala
-  FROM tecni 
- WHERE numero_cliente = <servicio_cab.numero_cliente>
-  
-
+       codigo_postal
+  FROM suscriptor 
+ WHERE codigo_cuenta = <surep.codigo_cuenta> 
+ 
+SELECT tipo_instalacion
+  FROM cadena_electrica 
+ WHERE codigo_cuenta = <surep.codigo_cuenta> 
+ 
+SELECT marca_contador,
+       modelo_contador,
+       numero_contador
+  FROM conta 
+ WHERE codigo_cuenta = <surep.codigo_cuenta> 
 ~~~
 
 
 > Nota 3: Para completar el valor de **VALOR_NIVEL_OPERATIVO_3** se debe respetar la siguiente lógica enunciada en el documento InterfazCreacionTdC_Corte_MAC.md  
 
+> Nota 4: Los clientes de CANDELA, a diferencia de MAC, pueden tener más de un medidor. 
 
-> Nota 4: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de tecni.codigo_voltaje:  
+> Nota 5: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de ??????:  
 
 | Valor de codigo_voltaje | Enviar |
 |-----|------|
-| 1 | 220V | 
-| 2 | 225V | 
-| 3 | 380V | 
+| 1 | 3x380/220V |
+| 2 | 3x220V |
+| 3 | 13200V |
+| 4 | 33000V |
+| 5 | 27500V |
+| 6 | 6500V |
+| 7 | 132000V |
+| 8 | 220000V |
+| 9 | 6600V |
+| 10 | 5000V |
+
+> Nota 6: Los clientes de CANDELA, a diferencia de MAC, tienen más de un precinto.
+
 
 
 
@@ -75,40 +80,40 @@ SELECT codigo_voltaje,
 | --------- | --------- | 
 | **Request.DATOS_CLAVE_PROCESOS_TDC** |  |
 | CODIGO_DISTRIBUIDORA | ESU |
-| CODIGO_EXTERNO_DEL_TDC | servicio_cab.nro_servicio con formato (ver Nota 1) |
+| CODIGO_EXTERNO_DEL_TDC | surep.codigo_cuenta + surep.correlativo con formato (ver Nota 1) |
 | CODIGO_PROCESO | GI |
 | CODIGO_SISTEMA_EXTERNO_DE_ORIGEN | ESUCAN |
 | CODIGO_SUBPROCESO | SCR |
 | CODIGO_TIPO_DE_TDC | SCR.01 |
 | LLAVE_SECRETA | -*Definir*- |
 | **Request.DATOS_COMUNES_PROCESOS_TDC** | |
-| FECHA_Y_HORA_DE_CREACION_DE_LA_ORDEN | servicio_cab.fecha_solicitud |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_CONTRACTISTA | servicio_cab.fecha_solicitud |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_INTERNO | servicio_cab.fecha_solicitud |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_LEGAL | servicio_cab.fecha_solicitud |
-| SECTOR | servicio_cab.sector |
-| ZONA | servicio_cab.zona |
-| TIPO_DE_RED | tecni.tec_tipo_instala |
+| FECHA_Y_HORA_DE_CREACION_DE_LA_ORDEN | surep.fec_solicit (es de tipo number, pasarla a datetime) |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_CONTRACTISTA | surep.fec_solicit (es de tipo number, pasarla a datetime) |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_INTERNO | surep.fec_solicit (es de tipo number, pasarla a datetime) |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_LEGAL | surep.fec_solicit (es de tipo number, pasarla a datetime) |
+| SECTOR | suscriptor.ciclo |
+| ZONA | suscriptor.ruta_lectura[1, 2] |
+| TIPO_DE_RED | cadena_electrica.tipo_instalacion |
 | PARAMETRO_NIVEL_OPERATIVO_3 | TIPO_CUADRILLA |
 | VALOR_NIVEL_OPERATIVO_3 | PROPIA o CONTRATADA (ver Nota 3) |
-| **MEDIDORS: Request.DATOS_COMUNES_PROCESOS_TDC.MEDIDORS** | |
-| MARCA_MEDIDOR | servicio_corte.marca_medidor |
-| MODELO_MEDIDOR | servicio_corte.modelo_medidor |
-| NUMERO_MEDIDOR | servicio_corte.numero_medidor |
-| TIPO_MEDIDOR | medid.clave_montri (ver Nota 4) |
-| UBICACION_DEL_MEDIDOR | servicio_corte.info_adic_lectura |
-| VALOR_TENSION_NOMINAL | Valor según tecni.codigo_voltaje (Ver Nota 5) |
-| **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** |  |
-| COLOR_DEL_SELLO | pr_precintos.color (Ver Nota 6) |
-| SELLOS_EN_SISTEMA | pr_precintos.numero_precinto (Ver Nota 6) |
+| **MEDIDORS: Request.DATOS_COMUNES_PROCESOS_TDC.MEDIDORS** | Pueden tener más de un medidor |
+| MARCA_MEDIDOR | conta.marca_contador |
+| MODELO_MEDIDOR | conta.modelo_contador |
+| NUMERO_MEDIDOR | conta.numero_contador |
+| TIPO_MEDIDOR | TRIFASICO |
+| UBICACION_DEL_MEDIDOR | suscriptor.inf_adicional |
+| VALOR_TENSION_NOMINAL | Valor según ?????? (Ver Nota 5) |
+| **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | Pueden tener más de un precinto |
+| COLOR_DEL_SELLO | **???????** |
+| SELLOS_EN_SISTEMA | suscriptor.selloX (Ver Nota 6) |
 | TIPO_DE_SELLO | **???????** |
-| UBICACION_DEL_SELLO | pr_precintos.ubicacion (Ver Nota 6) |
-| SERIE_SELLO | pr_precintos.serie (Ver Nota 6) |
+| UBICACION_DEL_SELLO | No se envía nada |
+| SERIE_SELLO | **???????** |
 | **SUMINSTROS: Request.DATOS_COMUNES_PROCESOS_TDC.SUMINISTROS** | |
-| ANTIGUEDAD | servicio_corte.antiguedad_saldo |
-| CODIGO_CLIENTE | servicio_cab.numero_cliente | 
-| CODIGO_POSTAL | cliente.cod_postal |
-| DEUDA | servicio_corte.deuda |
+| ANTIGUEDAD | suscriptor.antiguedad_saldo * 30 |
+| CODIGO_CLIENTE | surep.numero_cliente | 
+| CODIGO_POSTAL | suscriptor.codigo_postal |
+| DEUDA | surep.saldo_actual |
 | GIRO_DE_NEGOCIO | tabla.descripcion para nomtabla = "ACTECO" y codigo = <cliente.actividad_economic> |
 | LATITUD_CLIENTE | ubica_geo_cliente.lat  |
 | LONGITUD_CLIENTE | ubica_geo_cliente.lat |
@@ -128,7 +133,7 @@ SELECT codigo_voltaje,
 
 4. Evaluar el resultado que retorna el WS: 
 
-* Si el Código de Error/Resultado es "00" ("Operación ejecutada con éxito"): actualizar el campo servicio_cab.estado a "W".
-* Si el Código es "ODL002" ("Clave de identificación del TdC ya presiente en eOrder") o "ODL016" ("Intento de insertar a la misma vez el mismo TDC 2 veces"): la orden ya existe en eOrder. Registrar el evento y actualizar el campo servicio_cab.estado a "W".
-* En otro caso: error no manejable. Registrar el evento (enviar mail) pero no actualizar tablas en MAC.
+* Si el Código de Error/Resultado es "00" ("Operación ejecutada con éxito"): actualizar el campo ... a "...".
+* Si el Código es "ODL002" ("Clave de identificación del TdC ya presiente en eOrder") o "ODL016" ("Intento de insertar a la misma vez el mismo TDC 2 veces"): la orden ya existe en eOrder. Registrar el evento y actualizar el campo ... a "...".
+* En otro caso: error no manejable. Registrar el evento (enviar mail) pero no actualizar tablas en CANDELA.
 
