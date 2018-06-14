@@ -146,7 +146,7 @@ SELECT descrip
 | GIRO_DE_NEGOCIO | codigo_ciiu.descripcion para codigo_ciiu = <suscriptor.codigo_ciu> |
 | LATITUD_CLIENTE | cadena_electrica.coord_x_gm  |
 | LONGITUD_CLIENTE | cadena_electrica.coord_y_gm |
-| LOCALIDAD | suscriptor.localidad si suscriptor.provincia = "2"; cedena_electrica.nombre_barrio (puede no tener valor) si suscriptor.provincia = "1" |
+| LOCALIDAD | suscriptor.localidad si suscriptor.provincia = "2"; cadena_electrica.nombre_barrio (puede no tener valor) si suscriptor.provincia = "1" |
 | LOCALIZACION_TERRENO | suscriptor.dir_adicional |
 | NOMBRE_Y_APELLIDO_CLIENTE | suscriptor.nombre |
 | PISO | suscriptor.dir_piso + " " + suscriptor.dir_departamento |
