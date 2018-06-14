@@ -11,10 +11,11 @@ SELECT codigo_cuenta,
        correlativo,
        fec_solicit,
        saldo_actual
-  FROM surep 
- WHERE tipo_evento = 'S' 
+  FROM surep s, suscriptor c
+ WHERE s.numero_cuenta = c.numero_cuenta
+   AND tipo_evento = 'S' 
    AND estado = '...' 
- ORDER BY fecha_solicitud
+ ORDER BY fec_solicit
 ~~~
 
 2. Por cada orden encontrada en la consulta anterior, armar una TdC con los siguientes datos:
@@ -65,9 +66,18 @@ SELECT marca_contador,
   FROM conta 
  WHERE codigo_cuenta = <surep.codigo_cuenta> 
  
- SELECT descripcion
-   FROM codigo_ciiu
-  WHERE codigo_ciiu = <suscriptor.codigo_ciu>
+SELECT codigo_voltaje
+  FROM tecnico
+ WHERE codigo_cuenta = <surep.codigo_cuenta> 
+ 
+SELECT descripcion
+  FROM codigo_ciiu
+ WHERE codigo_ciiu = <suscriptor.codigo_ciu>
+  
+SELECT descrip 
+  FROM tabla 
+ WHERE nomtabla = 'TARIF' 
+   AND codtabla = <suscriptor.tarifa>
 ~~~
 
 
@@ -75,7 +85,7 @@ SELECT marca_contador,
 
 > Nota 4: Los clientes de CANDELA, a diferencia de MAC, pueden tener más de un medidor. 
 
-> Nota 5: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de ??????:  
+> Nota 5: Completar el valor de **VALOR_TENSION_NOMINAL** de acuerdo al valor de tecnico.codigo_voltaje:  
 
 | Valor de codigo_voltaje | Enviar |
 |-----|------|
@@ -90,7 +100,7 @@ SELECT marca_contador,
 | 9 | 6600V |
 | 10 | 5000V |
 
-> Nota 6: Los clientes de CANDELA, a diferencia de MAC, tienen más de un precinto.
+> Nota 6: Los clientes de CANDELA, a diferencia de MAC, tienen más de un precinto, pero solo se almacena el número (sin desagregar la información).
 
 
 
@@ -121,13 +131,13 @@ SELECT marca_contador,
 | NUMERO_MEDIDOR | conta.numero_contador |
 | TIPO_MEDIDOR | TRIFASICO |
 | UBICACION_DEL_MEDIDOR | suscriptor.inf_adicional |
-| VALOR_TENSION_NOMINAL | Valor según ?????? (Ver Nota 5) |
+| VALOR_TENSION_NOMINAL | Valor según tecnico.codigo_voltaje (Ver Nota 5) |
 | **SELLOS: Request.DATOS_COMUNES_PROCESOS_TDC.SELLOS** | Pueden tener más de un precinto |
-| COLOR_DEL_SELLO | **???????** |
+| COLOR_DEL_SELLO | No se envía nada |
 | SELLOS_EN_SISTEMA | suscriptor.selloX (Ver Nota 6) |
-| TIPO_DE_SELLO | **???????** |
+| TIPO_DE_SELLO | No se envía nada |
 | UBICACION_DEL_SELLO | No se envía nada |
-| SERIE_SELLO | **???????** |
+| SERIE_SELLO | No se envía nada |
 | **SUMINSTROS: Request.DATOS_COMUNES_PROCESOS_TDC.SUMINISTROS** | |
 | ANTIGUEDAD | suscriptor.antiguedad_saldo * 30 |
 | CODIGO_CLIENTE | surep.numero_cliente | 
@@ -136,14 +146,14 @@ SELECT marca_contador,
 | GIRO_DE_NEGOCIO | codigo_ciiu.descripcion para codigo_ciiu = <suscriptor.codigo_ciu> |
 | LATITUD_CLIENTE | cadena_electrica.coord_x_gm  |
 | LONGITUD_CLIENTE | cadena_electrica.coord_y_gm |
-| LOCALIDAD | suscriptor.localidad si suscriptor.provincia = "2"; ????????? si suscriptor.provincia = "1" |
+| LOCALIDAD | suscriptor.localidad si suscriptor.provincia = "2"; cedena_electrica.nombre_barrio (puede no tener valor) si suscriptor.provincia = "1" |
 | LOCALIZACION_TERRENO | suscriptor.dir_adicional |
 | NOMBRE_Y_APELLIDO_CLIENTE | suscriptor.nombre |
 | PISO | suscriptor.dir_piso + " " + suscriptor.dir_departamento |
 | PROVINCIA | 'BUENOS AIRES' si suscriptor.provincia = "2"; 'CAPITAL FEDERAL' si suscriptor.provincia = "1"  |
 | RUTA_DE_LECTURA | suscriptor.ruta_lectura |
 | SUCURSAL | suscriptor.ruta_lectura[0,2] |
-| TARIFA_EXISTENTE | suscriptor.tarifa |
+| TARIFA_EXISTENTE | Campo tabla.descrip para nomtabla = 'TARIF' AND codtabla = suscriptor.tarifa |
 | TELEFONO_CONTACTO | suscriptor.telefono |
 | TEXTO_DIRECCION | suscriptor.dir_calle + " " + suscriptor.dir_numero + " (entre " + suscriptor.dir_interseccion + " y " + suscriptor.dir_interseccion2 + ")" -- Se podría cambiar si no vienen completos los campos de entre calle.|
 
