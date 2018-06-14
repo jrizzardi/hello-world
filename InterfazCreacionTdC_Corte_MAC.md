@@ -36,11 +36,26 @@ SELECT ciclo,
        inf_adicional,
        sello1, sello2, sello3, sello4,
        antiguedad_saldo,
-       codigo_postal
+       codigo_postal,
+       codigo_ciu,
+       provincia,
+       localidad,
+       dir_adicional,
+       nombre,
+       dir_piso,
+       dir_departamento,
+       tarifa,
+       telefono,
+       dir_calle,
+       dir_numero,
+       dir_interseccion,
+       dir_interseccion2
   FROM suscriptor 
  WHERE codigo_cuenta = <surep.codigo_cuenta> 
  
-SELECT tipo_instalacion
+SELECT tipo_instalacion,
+       coord_x_gm,
+       coord_y_gm
   FROM cadena_electrica 
  WHERE codigo_cuenta = <surep.codigo_cuenta> 
  
@@ -49,6 +64,10 @@ SELECT marca_contador,
        numero_contador
   FROM conta 
  WHERE codigo_cuenta = <surep.codigo_cuenta> 
+ 
+ SELECT descripcion
+   FROM codigo_ciiu
+  WHERE codigo_ciiu = <suscriptor.codigo_ciu>
 ~~~
 
 
@@ -87,10 +106,10 @@ SELECT marca_contador,
 | CODIGO_TIPO_DE_TDC | SCR.01 |
 | LLAVE_SECRETA | -*Definir*- |
 | **Request.DATOS_COMUNES_PROCESOS_TDC** | |
-| FECHA_Y_HORA_DE_CREACION_DE_LA_ORDEN | surep.fec_solicit (es de tipo number, pasarla a datetime) |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_CONTRACTISTA | surep.fec_solicit (es de tipo number, pasarla a datetime) |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_INTERNO | surep.fec_solicit (es de tipo number, pasarla a datetime) |
-| TIEMPO_DE_REFERENCIA_PARA_ANS_LEGAL | surep.fec_solicit (es de tipo number, pasarla a datetime) |
+| FECHA_Y_HORA_DE_CREACION_DE_LA_ORDEN | surep.fec_solicit (es de tipo number, pasar a datetime) |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_CONTRACTISTA | surep.fec_solicit (es de tipo number, pasar a datetime) |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_INTERNO | surep.fec_solicit (es de tipo number, pasar a datetime) |
+| TIEMPO_DE_REFERENCIA_PARA_ANS_LEGAL | surep.fec_solicit (es de tipo number, pasar a datetime) |
 | SECTOR | suscriptor.ciclo |
 | ZONA | suscriptor.ruta_lectura[1, 2] |
 | TIPO_DE_RED | cadena_electrica.tipo_instalacion |
@@ -114,19 +133,19 @@ SELECT marca_contador,
 | CODIGO_CLIENTE | surep.numero_cliente | 
 | CODIGO_POSTAL | suscriptor.codigo_postal |
 | DEUDA | surep.saldo_actual |
-| GIRO_DE_NEGOCIO | tabla.descripcion para nomtabla = "ACTECO" y codigo = <cliente.actividad_economic> |
-| LATITUD_CLIENTE | ubica_geo_cliente.lat  |
-| LONGITUD_CLIENTE | ubica_geo_cliente.lat |
-| LOCALIDAD | cliente.nom_comuna si cliente.provincia = "B"; cliente.nom_barrio si cliente.provincia = "C" |
-| LOCALIZACION_TERRENO | servicio_corte.obs_dir |
-| NOMBRE_Y_APELLIDO_CLIENTE | servicio_corte.nombre |
-| PISO | servicio_corte.piso_dir + " " + servicio_corte.piso_depto |
-| PROVINCIA | cliente.nom_provincia |
-| RUTA_DE_LECTURA | servicio_corte.correlativo_ruta |
-| SUCURSAL | servicio_cab.sucursal |
-| TARIFA_EXISTENTE | servicio_cab.tarifa |
-| TELEFONO_CONTACTO | servicio_corte.telefono |
-| TEXTO_DIRECCION | servicio_corte.nom_calle + " " + servicio_corte.nro_dir + " (entre " + servicio_corte.nom_entre + " y " + servicio_corte.nom_entre1 + ")"|
+| GIRO_DE_NEGOCIO | codigo_ciiu.descripcion para codigo_ciiu = <suscriptor.codigo_ciu> |
+| LATITUD_CLIENTE | cadena_electrica.coord_x_gm  |
+| LONGITUD_CLIENTE | cadena_electrica.coord_y_gm |
+| LOCALIDAD | suscriptor.localidad si suscriptor.provincia = "2"; ????????? si suscriptor.provincia = "1" |
+| LOCALIZACION_TERRENO | suscriptor.dir_adicional |
+| NOMBRE_Y_APELLIDO_CLIENTE | suscriptor.nombre |
+| PISO | suscriptor.dir_piso + " " + suscriptor.dir_departamento |
+| PROVINCIA | 'BUENOS AIRES' si suscriptor.provincia = "2"; 'CAPITAL FEDERAL' si suscriptor.provincia = "1"  |
+| RUTA_DE_LECTURA | suscriptor.ruta_lectura |
+| SUCURSAL | suscriptor.ruta_lectura[0,2] |
+| TARIFA_EXISTENTE | suscriptor.tarifa |
+| TELEFONO_CONTACTO | suscriptor.telefono |
+| TEXTO_DIRECCION | suscriptor.dir_calle + " " + suscriptor.dir_numero + " (entre " + suscriptor.dir_interseccion + " y " + suscriptor.dir_interseccion2 + ")" -- Se podría cambiar si no vienen completos los campos de entre calle.|
 
 
 3. Con la estructura cargada, consumir el WS de TIBCO P001C_PeticionCreacionTDC_ARG.wsdl. 
